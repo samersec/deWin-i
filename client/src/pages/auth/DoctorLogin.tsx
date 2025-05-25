@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Stethoscope, User, Lock, ArrowRight, ShieldCheck } from 'lucide-react';
+import { User, Lock, ArrowRight } from 'lucide-react';
 import logo from '../../image/Dewini.png';
 
 export default function DoctorLogin() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -15,10 +15,10 @@ export default function DoctorLogin() {
     e.preventDefault();
     setError('');
     try {
-      await login(`doctor_${username}`, password);
+      await login(email, password, true);
       navigate('/doctor');
-    } catch (error) {
-      setError('Identifiants invalides');
+    } catch (error: any) {
+      setError(error.message || 'Identifiants invalides');
     }
   };
 
@@ -26,9 +26,7 @@ export default function DoctorLogin() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <div className="relative">
           <img src={logo} alt="Logo" className="h-50 w-auto" />
-          </div>
           <p className="text-gray-600 mt-2">Espace Médecin</p>
         </div>
 
@@ -41,16 +39,16 @@ export default function DoctorLogin() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Identifiant Professionnel
+              Email
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <User className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 required
               />

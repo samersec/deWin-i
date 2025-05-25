@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Stethoscope, User, Lock, ArrowRight } from 'lucide-react';
+import { User, Lock, ArrowRight } from 'lucide-react';
 import logo from '../../image/Dewini.png';
 
-
 export default function PatientLogin() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -16,10 +15,10 @@ export default function PatientLogin() {
     e.preventDefault();
     setError('');
     try {
-      await login(username, password);
+      await login(email, password, false);
       navigate('/patient');
-    } catch (error) {
-      setError('Identifiants invalides');
+    } catch (error: any) {
+      setError(error.message || 'Identifiants invalides');
     }
   };
 
@@ -27,8 +26,7 @@ export default function PatientLogin() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-        <img src={logo} alt="Logo" className="h-50 w-auto" />
-        <h1 className="text-2xl font-bold text-gray-900"></h1>
+          <img src={logo} alt="Logo" className="h-50 w-auto" />
           <p className="text-gray-600 mt-2">Espace Patient</p>
         </div>
 
@@ -41,16 +39,16 @@ export default function PatientLogin() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Identifiant
+              Email
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <User className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 required
               />
@@ -100,33 +98,13 @@ export default function PatientLogin() {
           </button>
         </form>
 
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Nouveau patient?</span>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <Link
-              to="/signup/patient"
-              className="w-full flex justify-center items-center py-2 px-4 border border-indigo-600 rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Créer un compte
-            </Link>
-          </div>
-
-          <div className="mt-4 text-center">
-            <Link
-              to="/login/medecin"
-              className="text-sm text-gray-600 hover:text-indigo-600"
-            >
-              Vous êtes médecin? Connectez-vous ici
-            </Link>
-          </div>
+        <div className="mt-6 text-center">
+          <Link
+            to="/login/medecin"
+            className="text-sm text-gray-600 hover:text-indigo-600"
+          >
+            Vous êtes médecin? Connectez-vous ici
+          </Link>
         </div>
       </div>
     </div>

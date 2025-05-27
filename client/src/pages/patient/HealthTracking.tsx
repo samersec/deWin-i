@@ -8,7 +8,7 @@ export default function HealthTracking() {
   const patientData = {
     avatar: 'https://cdn-icons-png.flaticon.com/512/1430/1430453.png', // Placeholder for avatar URL
     name: `${user?.prenom} ${user?.nom}`, // Use the logged-in user's name
-    patientId: 'PAT123456',
+    patientId: `${user?.id} `,
     bloodType: 'A+',
     currentIllnesses: ['Hypertension', 'Diabète de type 2'],
     ongoingTreatments: ['Métoprolol 50mg', 'Metformine 500mg'],

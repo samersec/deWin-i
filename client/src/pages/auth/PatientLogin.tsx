@@ -18,7 +18,7 @@ export default function PatientLogin() {
       await login(email, password, false);
       navigate('/patient');
     } catch (error: any) {
-      setError(error.message || 'Les données sont invalides');
+      setError('Les données sont invalides');
     }
   };
 

@@ -25,7 +25,6 @@ export default function PatientLayout({ children }: PatientLayoutProps) {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
   };
 
   const navigation = [

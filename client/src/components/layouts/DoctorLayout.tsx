@@ -24,7 +24,6 @@ export default function DoctorLayout({ children }: DoctorLayoutProps) {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
   };
 
   const navigation = [

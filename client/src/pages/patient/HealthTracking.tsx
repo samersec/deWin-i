@@ -2,13 +2,13 @@ import { useAuth } from '../../contexts/AuthContext';
 import { User, Pill, HeartPulse, ClipboardList } from 'lucide-react';
 
 export default function HealthTracking() {
-  const { user } = useAuth(); // Assuming the user data is available in the AuthContext
+  const { user } = useAuth(); // Get the logged-in user data
 
   // Mock data for the patient's health information
   const patientData = {
     avatar: 'https://cdn-icons-png.flaticon.com/512/1430/1430453.png', // Placeholder for avatar URL
-    name: 'Ahmed Ben Salem',
-    patientId: 'PAT123456',
+    name: `${user?.prenom} ${user?.nom}`, // Use the logged-in user's name
+    patientId: `${user?.id} `,
     bloodType: 'A+',
     currentIllnesses: ['Hypertension', 'Diabète de type 2'],
     ongoingTreatments: ['Métoprolol 50mg', 'Metformine 500mg'],

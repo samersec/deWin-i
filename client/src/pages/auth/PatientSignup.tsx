@@ -11,7 +11,7 @@ export default function PatientSignup() {
     email: '',
     phone: '',
     birthDate: '',
-    bloodType: '', // Added blood type field
+    bloodType: '', 
     password: '',
     confirmPassword: '',
   });
@@ -36,9 +36,8 @@ export default function PatientSignup() {
     }
 
     try {
-      // In a real app, you would call a registration API here
-      await login(formData.email, formData.password);
-      navigate('/patient');
+      console.log('Registration data:', formData);
+      navigate('/login/patient');
     } catch (error) {
       setError('Erreur lors de l\'inscription');
     }

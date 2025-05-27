@@ -8,39 +8,27 @@ interface PatientData {
 }
 
 export default function HealthTracking() {
-  const { user } = useAuth();
-  const [patientData, setPatientData] = useState<PatientData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth(); // Get the logged-in user data
 
-  useEffect(() => {
-    const fetchPatientData = async () => {
-      try {
-        const response = await fetch(`http://localhost:8081/api/users/patient/${user?.id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch patient data');
-        }
-        const data = await response.json();
-        setPatientData(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Mock data for the patient's health information
+  const patientData = {
+    avatar: 'https://cdn-icons-png.flaticon.com/512/1430/1430453.png', // Placeholder for avatar URL
+    name: `${user?.prenom} ${user?.nom}`, // Use the logged-in user's name
+    patientId: 'PAT123456',
+    bloodType: 'A+',
+    currentIllnesses: ['Hypertension', 'Diabète de type 2'],
+    ongoingTreatments: ['Métoprolol 50mg', 'Metformine 500mg'],
+    medicationReminders: [
+      { id: 1, medication: 'Métoprolol 50mg', time: '08:00', completed: false },
+      { id: 2, medication: 'Metformine 500mg', time: '12:00', completed: false },
+      { id: 3, medication: 'Métoprolol 50mg', time: '20:00', completed: false },
+    ],
+  };
 
-    if (user?.id) {
-      fetchPatientData();
-    }
-  }, [user?.id]);
-
-  if (loading) {
-    return <div className="p-4">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="p-4 text-red-600">Error: {error}</div>;
-  }
+  const toggleMedicationReminder = (id: number) => {
+    // Logic to toggle the completion status of a medication reminder
+    console.log(`Toggled medication reminder with ID: ${id}`);
+  };
 
   return (
     <div className="space-y-6">

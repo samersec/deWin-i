@@ -1,28 +1,46 @@
 import { useAuth } from '../../contexts/AuthContext';
-import { User, Pill, HeartPulse, ClipboardList } from 'lucide-react';
+import { User } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+interface PatientData {
+  nom: string;
+  prenom: string;
+}
 
 export default function HealthTracking() {
-  const { user } = useAuth(); // Get the logged-in user data
+  const { user } = useAuth();
+  const [patientData, setPatientData] = useState<PatientData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for the patient's health information
-  const patientData = {
-    avatar: 'https://cdn-icons-png.flaticon.com/512/1430/1430453.png', // Placeholder for avatar URL
-    name: `${user?.prenom} ${user?.nom}`, // Use the logged-in user's name
-    patientId: 'PAT123456',
-    bloodType: 'A+',
-    currentIllnesses: ['Hypertension', 'Diabète de type 2'],
-    ongoingTreatments: ['Métoprolol 50mg', 'Metformine 500mg'],
-    medicationReminders: [
-      { id: 1, medication: 'Métoprolol 50mg', time: '08:00', completed: false },
-      { id: 2, medication: 'Metformine 500mg', time: '12:00', completed: false },
-      { id: 3, medication: 'Métoprolol 50mg', time: '20:00', completed: false },
-    ],
-  };
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8081/api/users/patient/${user?.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch patient data');
+        }
+        const data = await response.json();
+        setPatientData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const toggleMedicationReminder = (id: number) => {
-    // Logic to toggle the completion status of a medication reminder
-    console.log(`Toggled medication reminder with ID: ${id}`);
-  };
+    if (user?.id) {
+      fetchPatientData();
+    }
+  }, [user?.id]);
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="p-4 text-red-600">Error: {error}</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -32,81 +50,15 @@ export default function HealthTracking() {
 
       <div className="bg-white p-6 rounded-lg shadow">
         <div className="flex items-center space-x-4">
-          <img
-            src={patientData.avatar}
-            alt="Patient Avatar"
-            className="w-16 h-16 rounded-full"
-          />
+          <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center">
+            <User className="h-8 w-8 text-indigo-600" />
+          </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">{patientData.name}</h2>
-            <p className="text-sm text-gray-500">ID Patient: {patientData.patientId}</p>
+            <h2 className="text-xl font-semibold text-gray-900">
+              {patientData?.prenom} {patientData?.nom}
+            </h2>
+            <p className="text-sm text-gray-500">ID Patient: {user?.id}</p>
           </div>
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <HeartPulse className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-lg font-medium text-gray-900">Groupe Sanguin</h3>
-            </div>
-            <p className="mt-2 text-sm text-gray-700">{patientData.bloodType}</p>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <ClipboardList className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-lg font-medium text-gray-900">Maladies Actuelles</h3>
-            </div>
-            <ul className="mt-2 space-y-1">
-              {patientData.currentIllnesses.map((illness, index) => (
-                <li key={index} className="text-sm text-gray-700">
-                  {illness}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <Pill className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-lg font-medium text-gray-900">Traitements en Cours</h3>
-            </div>
-            <ul className="mt-2 space-y-1">
-              {patientData.ongoingTreatments.map((treatment, index) => (
-                <li key={index} className="text-sm text-gray-700">
-                  {treatment}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Rappels de Médicaments</h3>
-        <div className="space-y-4">
-          {patientData.medicationReminders.map((reminder) => (
-            <div
-              key={reminder.id}
-              className="flex justify-between items-center border-b pb-2"
-            >
-              <div className="flex items-center space-x-4">
-                <input
-                  type="checkbox"
-                  checked={reminder.completed}
-                  onChange={() => toggleMedicationReminder(reminder.id)}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <div>
-                  <p className="font-medium text-gray-900">{reminder.medication}</p>
-                  <p className="text-sm text-gray-500">{reminder.time}</p>
-                </div>
-              </div>
-              <button className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                Modifier
-              </button>
-            </div>
-          ))}
         </div>
       </div>
     </div>

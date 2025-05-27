@@ -17,14 +17,10 @@ public class CorsConfig {
         // Allow requests from your frontend origin
         config.addAllowedOrigin("http://localhost:5173");
         
-        // Allow common HTTP methods
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        // config.addAllowedMethod("PUT");
-        // config.addAllowedMethod("DELETE");
-        // config.addAllowedMethod("OPTIONS");
+        // Allow all HTTP methods
+        config.addAllowedMethod("*");
         
-        // Allow common headers
+        // Allow all headers
         config.addAllowedHeader("*");
         
         // Allow credentials (cookies, authorization headers, etc.)

@@ -18,7 +18,7 @@ export default function DoctorLogin() {
       await login(email, password, true);
       navigate('/doctor');
     } catch (error: any) {
-      setError(error.message || 'Identifiants invalides');
+      setError(error.message || 'Les données sont invalides');
     }
   };
 

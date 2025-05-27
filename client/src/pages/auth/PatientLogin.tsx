@@ -18,7 +18,7 @@ export default function PatientLogin() {
       await login(email, password, false);
       navigate('/patient');
     } catch (error: any) {
-      setError(error.message || 'Identifiants invalides');
+      setError(error.message || 'Les données sont invalides');
     }
   };
 
@@ -105,6 +105,14 @@ export default function PatientLogin() {
           >
             Vous êtes médecin? Connectez-vous ici
           </Link>
+          <div className="mt-2">
+            <Link
+              to="/signup/patient"
+              className="text-sm text-gray-600 hover:text-indigo-600"
+            >
+              Pas encore de compte? Inscrivez-vous ici
+            </Link>
+          </div>
         </div>
       </div>
     </div>

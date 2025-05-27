@@ -36,10 +36,31 @@ export default function PatientSignup() {
     }
 
     try {
-      console.log('Registration data:', formData);
+      const response = await fetch('http://localhost:8081/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nom: formData.lastName,
+          prenom: formData.firstName,
+          email: formData.email,
+          telephone: formData.phone,
+          date_naissance: formData.birthDate,
+          grp_sang: formData.bloodType,
+          password: formData.password,
+          role: 'patient'
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData || 'Erreur lors de l\'inscription');
+      }
+
       navigate('/login/patient');
-    } catch (error) {
-      setError('Erreur lors de l\'inscription');
+    } catch (error: any) {
+      setError(error.message || 'Erreur lors de l\'inscription');
     }
   };
 

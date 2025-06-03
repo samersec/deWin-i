@@ -14,7 +14,7 @@ public class ServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ServerApplication.class, args);
 	}
-	@CrossOrigin(origins = "http://localhost:5173")
+	@CrossOrigin(origins = "http://localhost:27017")
 	@GetMapping("/hello")
 	public String hello() {
 		return "Hello, spring";

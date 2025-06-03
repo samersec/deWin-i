@@ -13,7 +13,6 @@ export default function PatientSignup() {
     birthDate: '',
     bloodType: '', 
     password: '',
-    confirmPassword: '',
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -30,16 +29,33 @@ export default function PatientSignup() {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
-      return;
-    }
-
     try {
-      console.log('Registration data:', formData);
+      const response = await fetch('http://localhost:8081/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nom: formData.lastName,
+          prenom: formData.firstName,
+          email: formData.email,
+          password: formData.password,
+          telephone: formData.phone,
+          dateNaissance: formData.birthDate,
+          groupeSanguin: formData.bloodType,
+          role: 'patient'  // Définir le rôle par défaut comme patient
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors de l\'inscription');
+      }
+
+      // Si l'inscription réussit, rediriger vers la page de connexion
       navigate('/login/patient');
-    } catch (error) {
-      setError('Erreur lors de l\'inscription');
+    } catch (error: any) {
+      setError(error.message || 'Erreur lors de l\'inscription');
     }
   };
 
@@ -188,26 +204,6 @@ export default function PatientSignup() {
                 type="password"
                 name="password"
                 value={formData.password}
-                onChange={handleChange}
-                className="pl-10 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                required
-                minLength={8}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirmer le mot de passe
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
                 onChange={handleChange}
                 className="pl-10 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 required

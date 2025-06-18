@@ -15,6 +15,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Allow requests from your frontend origin
+        config.addAllowedOrigin("http://localhost:5174");
         config.addAllowedOrigin("http://localhost:5173");
 
         // Allow all HTTP methods
@@ -25,6 +26,14 @@ public class CorsConfig {
 
         // Allow credentials (cookies, authorization headers, etc.)
         config.setAllowCredentials(true);
+
+        // Expose headers
+        config.addExposedHeader("Authorization");
+        config.addExposedHeader("Content-Type");
+        config.addExposedHeader("Accept");
+
+        // Set max age
+        config.setMaxAge(3600L);
 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);

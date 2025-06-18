@@ -16,7 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = { "http://localhost:5174",
+        "http://localhost:5173" }, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

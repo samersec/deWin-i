@@ -19,10 +19,10 @@ export default function HealthTracking() {
     ],
   };
 
-  const toggleMedicationReminder = (id: number) => {
-    // Logic to toggle the completion status of a medication reminder
-    console.log(`Toggled medication reminder with ID: ${id}`);
-  };
+  // const toggleMedicationReminder = (id: number) => {
+  //   // Logic to toggle the completion status of a medication reminder
+  //   console.log(`Toggled medication reminder with ID: ${id}`);
+  // };
 
   return (
     <div className="space-y-6">
@@ -52,7 +52,7 @@ export default function HealthTracking() {
             <p className="mt-2 text-sm text-gray-700">{patientData.bloodType}</p>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg">
+          {/* <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center space-x-2">
               <ClipboardList className="h-5 w-5 text-indigo-600" />
               <h3 className="text-lg font-medium text-gray-900">Maladies Actuelles</h3>
@@ -64,9 +64,9 @@ export default function HealthTracking() {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
-          <div className="bg-gray-50 p-4 rounded-lg">
+          {/* <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center space-x-2">
               <Pill className="h-5 w-5 text-indigo-600" />
               <h3 className="text-lg font-medium text-gray-900">Traitements en Cours</h3>
@@ -78,11 +78,11 @@ export default function HealthTracking() {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow">
+      {/* <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Rappels de Médicaments</h3>
         <div className="space-y-4">
           {patientData.medicationReminders.map((reminder) => (
@@ -108,7 +108,8 @@ export default function HealthTracking() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
+
     </div>
   );
 }

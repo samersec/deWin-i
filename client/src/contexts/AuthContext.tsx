@@ -44,6 +44,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (email: string, password: string, isDoctorLogin: boolean) => {
     try {
       setError(null);
+      console.log('Attempting login for:', email, 'as', isDoctorLogin ? 'doctor' : 'patient');
+      
       const response = await fetch('http://localhost:8081/api/users/login', {
         method: 'POST',
         headers: {
@@ -52,21 +54,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         body: JSON.stringify({ email, password }),
       });
 
+      console.log('Response status:', response.status);
+      
+      const responseData = await response.json();
+      console.log('Login response data:', responseData);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData || 'Invalid credentials');
+        throw new Error(responseData.message || 'Erreur d\'authentification');
       }
 
-      const userData = await response.json();
+      if (!responseData.user || typeof responseData.user !== 'object') {
+        console.error('Invalid response format:', responseData);
+        throw new Error('Format de réponse invalide');
+      }
+
+      const userData = responseData.user;
+
+      if (!userData.role) {
+        console.error('No role found in user data:', userData);
+        throw new Error('Rôle utilisateur manquant');
+      }
 
       // Check login role
       const userRole = userData.role.toLowerCase();
+      console.log('User role:', userRole, 'Expected role:', isDoctorLogin ? 'medecin' : 'patient');
+      
       if ((isDoctorLogin && userRole !== 'medecin') || (!isDoctorLogin && userRole !== 'patient')) {
         throw new Error('Veuillez utiliser la page de connexion appropriée');
       }
 
       setUser(userData);
-      localStorage.setItem('authUser', JSON.stringify(userData)); // Save to localStorage
+      localStorage.setItem('authUser', JSON.stringify(userData));
 
       // Navigate to the correct dashboard
       if (userRole === 'medecin') {
@@ -74,18 +92,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } else if (userRole === 'patient') {
         navigate('/patient');
       } else {
-        setError('Rôle non reconnu');
+        throw new Error('Rôle non reconnu');
       }
     } catch (error: any) {
-      setError(error.message || 'Erreur de connexion');
-      throw error;
+      console.error('Login error details:', error);
+      const errorMessage = error.message || 'Erreur de connexion';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
   const logout = () => {
     setUser(null);
     setError(null);
-    localStorage.removeItem('authUser'); // Remove from localStorage
+    localStorage.removeItem('authUser');
     navigate('/login/patient');
   };
 

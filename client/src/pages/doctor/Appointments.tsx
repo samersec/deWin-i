@@ -1,5 +1,16 @@
 import { useState, useRef } from 'react';
-import { Calendar, Clock, AlertCircle, Mic, Square, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, Clock, AlertCircle, Mic, Square, ChevronDown, ChevronUp, X } from 'lucide-react';
+
+interface Appointment {
+  id: number;
+  patientName: string;
+  date: string;
+  time: string;
+  duration: string;
+  type: string;
+  status: 'confirmed' | 'pending' | 'cancelled';
+  notes?: string;
+}
 
 export default function Appointments() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -7,11 +18,19 @@ export default function Appointments() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordings, setRecordings] = useState<{ [key: number]: string }>({});
   const [transcripts, setTranscripts] = useState<{ [key: number]: string }>({});
+  const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
+  const [newAppointment, setNewAppointment] = useState<Partial<Appointment>>({
+    date: new Date().toISOString().split('T')[0],
+    time: '09:00',
+    duration: '30min',
+    type: 'Consultation',
+    status: 'pending'
+  });
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
-  const appointments = [
+  const appointments: Appointment[] = [
     {
       id: 1,
       patientName: 'Ahmed Ben Salem',
@@ -47,13 +66,47 @@ export default function Appointments() {
         return 'bg-green-100 text-green-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return 'Confirmé';
+      case 'pending':
+        return 'En attente';
+      case 'cancelled':
+        return 'Annulé';
+      default:
+        return status;
+    }
+  };
+
   const togglePatientExpand = (id: number) => {
     setExpandedPatient(expandedPatient === id ? null : id);
+  };
+
+  const handleNewAppointmentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically make an API call to create the appointment
+    console.log('New appointment:', newAppointment);
+    setShowNewAppointmentModal(false);
+    setNewAppointment({
+      date: new Date().toISOString().split('T')[0],
+      time: '09:00',
+      duration: '30min',
+      type: 'Consultation',
+      status: 'pending'
+    });
+  };
+
+  const handleAppointmentStatusChange = (id: number, newStatus: 'confirmed' | 'pending' | 'cancelled') => {
+    // Here you would typically make an API call to update the appointment status
+    console.log(`Updating appointment ${id} to status: ${newStatus}`);
   };
 
   const startRecording = async (patientId: number) => {
@@ -142,10 +195,103 @@ export default function Appointments() {
             onChange={(e) => setSelectedDate(e.target.value)}
           />
         </div>
-        <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+        <button 
+          onClick={() => setShowNewAppointmentModal(true)}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+        >
           Nouveau Rendez-vous
         </button>
       </div>
+
+      {/* New Appointment Modal */}
+      {showNewAppointmentModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Nouveau Rendez-vous</h2>
+              <button 
+                onClick={() => setShowNewAppointmentModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <form onSubmit={handleNewAppointmentSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Patient</label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  value={newAppointment.patientName || ''}
+                  onChange={(e) => setNewAppointment({...newAppointment, patientName: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Date</label>
+                <input
+                  type="date"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  value={newAppointment.date}
+                  onChange={(e) => setNewAppointment({...newAppointment, date: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Heure</label>
+                <input
+                  type="time"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  value={newAppointment.time}
+                  onChange={(e) => setNewAppointment({...newAppointment, time: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Durée</label>
+                <select
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  value={newAppointment.duration}
+                  onChange={(e) => setNewAppointment({...newAppointment, duration: e.target.value})}
+                  required
+                >
+                  <option value="30min">30 minutes</option>
+                  <option value="45min">45 minutes</option>
+                  <option value="60min">1 heure</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Type</label>
+                <select
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  value={newAppointment.type}
+                  onChange={(e) => setNewAppointment({...newAppointment, type: e.target.value})}
+                  required
+                >
+                  <option value="Consultation">Consultation</option>
+                  <option value="Suivi">Suivi</option>
+                  <option value="Urgence">Urgence</option>
+                </select>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowNewAppointmentModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                >
+                  Créer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow">
         <div className="divide-y divide-gray-200">
@@ -176,9 +322,17 @@ export default function Appointments() {
                     </div>
                   </div>
                 </div>
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(appointment.status)}`}>
-                  {appointment.status === 'confirmed' ? 'Confirmé' : 'En attente'}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <select
+                    value={appointment.status}
+                    onChange={(e) => handleAppointmentStatusChange(appointment.id, e.target.value as 'confirmed' | 'pending' | 'cancelled')}
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(appointment.status)} border-0 focus:ring-0`}
+                  >
+                    <option value="confirmed">Confirmé</option>
+                    <option value="pending">En attente</option>
+                    <option value="cancelled">Annulé</option>
+                  </select>
+                </div>
               </div>
 
               {expandedPatient === appointment.id && (
@@ -187,7 +341,10 @@ export default function Appointments() {
                     <button className="text-sm text-indigo-600 hover:text-indigo-800">
                       Modifier
                     </button>
-                    <button className="text-sm text-red-600 hover:text-red-800">
+                    <button 
+                      onClick={() => handleAppointmentStatusChange(appointment.id, 'cancelled')}
+                      className="text-sm text-red-600 hover:text-red-800"
+                    >
                       Annuler
                     </button>
                     <button className="text-sm text-gray-600 hover:text-gray-800">
